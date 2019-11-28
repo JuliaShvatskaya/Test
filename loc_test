@@ -1,0 +1,59 @@
+function getLocation() {
+	var startPos;
+	var nudge = document.getElementById("nudge");
+	var nudge2 = document.getElementById("nudge2");
+
+
+	var showNudgeBanner = function() {
+		try{
+			if(document.getElementById("permissionDeniedMsg").hidden !=false){
+				nudge.style.display = "block";
+				nudge2.style.display = "block";
+				setTimeout(function() {
+					permissionDeniedMsg
+				}, 2000)
+			}
+		}catch(e){
+
+		}
+	};
+
+	var hideNudgeBanner = function() {
+		try{
+			nudge.style.display = "none";
+			nudge2.style.display = "none";
+		}catch(e){
+
+		}
+	};
+
+	var nudgeTimeoutId = setTimeout(showNudgeBanner, 5000);
+
+	var geoSuccess = function(position) {
+		hideNudgeBanner();
+		// We have the location, don't display banner
+		clearTimeout(nudgeTimeoutId);
+		performSuccess(position);
+	};
+	var geoError = function(error) {
+
+		console.log(error)
+		switch (error.code) {
+		case error.POSITION_UNAVAILABLE:
+			handlePosUnavailable()
+			break;
+		case error.PERMISSION_DENIED:
+			handlePermissionDenied();
+			break;
+		case error.TIMEOUT:
+			// The user didn't accept the callout
+			showNudgeBanner();
+			break;
+		default:
+			hideNudgeBanner();
+		}
+
+	};
+
+	navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
+}
